@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Deep Joshi — Full Stack Developer & Creative Technologist. Explore my portfolio featuring immersive 3D experiences." />
+  <title>Deep Joshi | DJ Portfolio</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css?v=2026.1" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       CANVAS — Three.js renders the 3D "DJ" here
+  ═══════════════════════════════════════════ -->
+  <canvas id="dj-canvas"></canvas>
+
+  <!-- ═══════════════════════════════════════════
+       CUSTOM CURSOR
+  ═══════════════════════════════════════════ -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- ═══════════════════════════════════════════
+       NAVIGATION
+  ═══════════════════════════════════════════ -->
+  <nav id="navbar">
+    <div class="nav-logo">DJ</div>
+    <ul class="nav-links">
+      <li><a href="#home"  class="nav-link" id="nav-home">Home</a></li>
+      <li><a href="#about" class="nav-link" id="nav-about">About</a></li>
+      <li><a href="#projects" class="nav-link" id="nav-projects">Projects</a></li>
+      <li><a href="#contact" class="nav-link" id="nav-contact">Contact</a></li>
+    </ul>
+    <button class="nav-cta" id="nav-cta-btn">Hire Me</button>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <ul>
+      <li><a href="#home"     class="mob-link">Home</a></li>
+      <li><a href="#about"   class="mob-link">About</a></li>
+      <li><a href="#projects" class="mob-link">Projects</a></li>
+      <li><a href="#contact" class="mob-link">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN CONTENT WRAPPER
+  ═══════════════════════════════════════════ -->
+  <main id="scroll-container">
+
+    <!-- ── SECTION 1 · HOME ────────────────── -->
+    <section id="home" class="section section--home">
+      <div class="parallax-bg" id="parallax-bg"></div>
+
+      <div class="home-content" id="home-content">
+        <div class="home-eyebrow" id="home-eyebrow">Full Stack Developer &amp; Creative Technologist</div>
+        <h1 class="home-title" id="home-title">
+          Hi!<br />
+          I'M <span class="gradient-text">Deep Joshi</span>
+        </h1>
+        <p class="home-subtitle" id="home-subtitle">
+          # Resource Developed By DJ • Deep Joshi
+        </p>
+        <div class="home-cta-row" id="home-cta-row">
+          <a href="#projects" class="btn btn--primary" id="btn-work">View My Work</a>
+          <a href="#contact"  class="btn btn--ghost"   id="btn-contact">Get In Touch</a>
+        </div>
+      </div>
+
+      <!-- Scroll hint -->
+      <div class="scroll-hint" id="scroll-hint">
+        <span>Scroll</span>
+        <div class="scroll-hint__line"></div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 2 · ABOUT ───────────────── -->
+    <section id="about" class="section section--about">
+      <div class="section-inner">
+        <div class="section-label">01 / About</div>
+        <h2 class="section-title" id="about-title">The Mind<br /><span class="gradient-text">Behind DJ</span></h2>
+
+        <div class="about-grid">
+          <div class="about-text" id="about-text">
+            <p>
+              I am a motivated & passionate developer with strong interest in learning and improving my skills. I have experience working with Python, Java, PHP, native Android and other programming technologies.
+            </p>
+            <p>
+              My goal is to continuously improve, gain practical experience, and contribute effectively to real-world software projects.
+            </p>
+            <div class="about-stats">
+              <div class="stat" id="stat-1">
+                <div class="stat__num" style="font-size:2rem;">✦</div>
+                <div class="stat__label">Elegant Design</div>
+              </div>
+              <div class="stat" id="stat-2">
+                <div class="stat__num" style="font-size:2rem;">🚀</div>
+                <div class="stat__label">High Performance</div>
+              </div>
+              <div class="stat" id="stat-3">
+                <div class="stat__num" style="font-size:2rem;">⚡</div>
+                <div class="stat__label">Easy Integration</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="about-skills" id="about-skills">
+            <div class="skill-group">
+              <div class="skill-group__label">Programming</div>
+              <div class="skill-tags">
+                <span class="tag">Java</span>
+                <span class="tag">Python</span>
+                <span class="tag">PHP</span>
+                <span class="tag">JavaScript</span>
+              </div>
+            </div>
+            <div class="skill-group">
+              <div class="skill-group__label">Web & Database</div>
+              <div class="skill-tags">
+                <span class="tag">HTML</span>
+                <span class="tag">CSS</span>
+                <span class="tag">MySQL</span>
+                <span class="tag">PhpMyAdmin</span>
+              </div>
+            </div>
+            <div class="skill-group">
+              <div class="skill-group__label">Other Technologies</div>
+              <div class="skill-tags">
+                <span class="tag">Native Android</span>
+                <span class="tag">3D Animations</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3 · QUALIFICATIONS ───────────── -->
+    <section id="qualifications" class="section section--qualifications">
+      <div class="section-inner">
+        <div class="section-label">02 / Qualifications</div>
+        <h2 class="section-title" id="qualifications-title">My<br /><span class="gradient-text">Journey</span></h2>
+        
+        <div class="qual-timeline">
+          <div class="qual-item">
+            <div class="qual-dot"></div>
+            <div class="qual-year">10th Complete</div>
+            <h3 class="qual-title">Shree Swaminarayan Gurukul</h3>
+            <p class="qual-desc">G.I.D.C chitra • Mathematics, Sanskrit, and core subjects.</p>
+          </div>
+          <div class="qual-item">
+            <div class="qual-dot"></div>
+            <div class="qual-year">High School (11th & 12th)</div>
+            <h3 class="qual-title">Higher Secondary Education</h3>
+            <p class="qual-desc">Focused on Computer Science and core academics.</p>
+          </div>
+          <div class="qual-item">
+            <div class="qual-dot"></div>
+            <div class="qual-year">Bachelor's Degree</div>
+            <h3 class="qual-title">Computer Engineering</h3>
+            <p class="qual-desc">Extensive study in programming, databases, and software engineering.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4 · PROJECTS ───────────── -->
+    <section id="projects" class="section section--projects">
+      <div class="section-inner">
+        <div class="section-label">03 / Projects</div>
+        <h2 class="section-title" id="projects-title">Selected<br /><span class="gradient-text">Works</span></h2>
+
+        <div class="projects-grid" id="projects-grid">
+
+          <article class="project-card" id="card-1" data-index="1">
+            <div class="project-card__glow"></div>
+            <div class="project-card__img">
+              <div class="img-placeholder img-placeholder--blue">
+                <span class="project-icon">📅</span>
+              </div>
+            </div>
+            <div class="project-card__body">
+              <div class="project-card__tags">
+                <span class="tag tag--sm">Web Dev</span>
+                <span class="tag tag--sm">Event Management</span>
+              </div>
+              <h3 class="project-card__title">DeRuGo Event Managing</h3>
+              <p class="project-card__desc">A comprehensive platform for managing events, planning, and scheduling with Team DeRuGo.</p>
+              <a href="https://derugo.netlify.app/" target="_blank" class="project-card__link">View Project →</a>
+            </div>
+          </article>
+
+          <article class="project-card project-card--featured" id="card-2" data-index="2">
+            <div class="project-card__glow"></div>
+            <div class="project-card__img">
+              <div class="img-placeholder img-placeholder--purple">
+                <span class="project-icon">🎓</span>
+              </div>
+            </div>
+            <div class="project-card__body">
+              <div class="project-card__tags">
+                <span class="tag tag--sm">University</span>
+                <span class="tag tag--sm">Premium UI</span>
+              </div>
+              <h3 class="project-card__title">GMIU Premium Program</h3>
+              <p class="project-card__desc">Gyanmanjari Innovative University (GMIU) Premium Program website featuring a modern design.</p>
+              <div class="project-card__featured-badge">Featured</div>
+              <a href="#" class="project-card__link">View Project →</a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 5 · TEAM ───────────────── -->
+    <section id="team" class="section section--team">
+      <div class="section-inner">
+        <div class="section-label">04 / Team DeRuGo</div>
+        <h2 class="section-title" id="team-title">What Our<br /><span class="gradient-text">Team Says</span></h2>
+        
+        <div class="team-grid">
+          <div class="team-card">
+            <p class="team-quote">"The attention to detail and innovative features have completely transformed our workflow."</p>
+            <h4 class="team-name">DEEP</h4>
+            <span class="team-role">Product Manager • TechFlow</span>
+          </div>
+          <div class="team-card">
+            <p class="team-quote">"Our development process is much smoother, allowing us to ship faster with confidence."</p>
+            <h4 class="team-name">RUDRA</h4>
+            <span class="team-role">Lead Developer</span>
+          </div>
+          <div class="team-card">
+            <p class="team-quote">"A truly exceptional standard of quality and code architecture that scales beautifully."</p>
+            <h4 class="team-name">GOPAL</h4>
+            <span class="team-role">Systems Architect</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 6 · CONTACT ────────────── -->
+    <section id="contact" class="section section--contact">
+      <div class="section-inner">
+        <div class="section-label">05 / Contact</div>
+        <h2 class="section-title" id="contact-title">Let's Build<br /><span class="gradient-text">Something Great</span></h2>
+
+        <div class="contact-layout">
+          <div class="contact-info" id="contact-info">
+            <p class="contact-tagline">Have a project in mind? I'd love to hear about it. Drop me a message and let's make it happen.</p>
+
+            <div class="contact-items">
+              <a href="mailto:deepjoshi8553@gmail.com" class="contact-item" id="contact-email">
+                <div class="contact-item__icon">✉️</div>
+                <div>
+                  <div class="contact-item__label">Email</div>
+                  <div class="contact-item__value">deepjoshi8553@gmail.com</div>
+                </div>
+              </a>
+              <a href="tel:+917862085863" class="contact-item" id="contact-phone">
+                <div class="contact-item__icon">📞</div>
+                <div>
+                  <div class="contact-item__label">Phone</div>
+                  <div class="contact-item__value">+91 7862085863</div>
+                </div>
+              </a>
+              <div class="contact-item" id="contact-location">
+                <div class="contact-item__icon">📍</div>
+                <div>
+                  <div class="contact-item__label">Location</div>
+                  <div class="contact-item__value">Bajarangdasbapa nagar society, Bhavnagar.<br>21°45'35.0"N 72°06'28.0"E</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <form class="contact-form" id="contact-form" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="f-name">Name</label>
+                <input type="text"  id="f-name"    name="name"    placeholder="Your Name"    required />
+              </div>
+              <div class="form-group">
+                <label for="f-email">Email</label>
+                <input type="email" id="f-email"   name="email"   placeholder="your@email.com" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="f-subject">Subject</label>
+              <input type="text" id="f-subject" name="subject" placeholder="Project / Collaboration / Other" />
+            </div>
+            <div class="form-group">
+              <label for="f-message">Message</label>
+              <textarea id="f-message" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn--primary btn--full" id="form-submit-btn">
+              <span class="btn-text">Send Message</span>
+              <span class="btn-icon">→</span>
+            </button>
+            <div class="form-success" id="form-success">✅ Message sent! I'll be in touch soon.</div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── FOOTER ────────────────────────────── -->
+  <footer id="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">DJ</div>
+      <p class="footer-copy">&copy; 2026 DEEP. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="#" id="social-gh"  aria-label="GitHub">GH</a>
+        <a href="#" id="social-li"  aria-label="LinkedIn">LI</a>
+        <a href="#" id="social-ig"  aria-label="Instagram">IG</a>
+        <a href="#" id="social-fb"  aria-label="Facebook">FB</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Page Loader -->
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="loader-dj">DJ</div>
+      <div class="loader-bar"><div class="loader-bar__fill" id="loader-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Three.js (r124 contains FontLoader and TextGeometry in core) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.min.js"></script>
+
+  <script src="script.js?v=2026.1"></script>
+</body>
+</html>

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { COLOR_PALETTES } from './ColorSwitcher';
 
 export default function CrashStars() {
   const canvasRef = useRef(null);
@@ -20,13 +19,8 @@ export default function CrashStars() {
     };
     window.addEventListener('resize', onResize);
 
-    // Dynamic accent RGB matching selected theme
-    let activeRgb = '92, 245, 205';
-    const savedTheme = localStorage.getItem('dj_accent_theme');
-    if (savedTheme) {
-      const found = COLOR_PALETTES.find((p) => p.id === savedTheme);
-      if (found && found.rgb) activeRgb = found.rgb;
-    }
+    // Clean Cyber Teal RGB accent
+    const activeRgb = '92, 245, 205';
 
     // Track scroll velocity to accelerate crash stars on scroll
     let lastScrollY = window.scrollY;
@@ -83,20 +77,6 @@ export default function CrashStars() {
       isAccent: i % 2 === 0,
       hue: i % 2 === 0 ? activeRgb : '255, 255, 255',
     }));
-
-    // Listen to theme color change events and update star hues immediately
-    const onColorChange = (e) => {
-      if (e.detail) {
-        activeRgb = e.detail;
-        crashStars.forEach((star) => {
-          if (star.isAccent) star.hue = activeRgb;
-        });
-        shineStars.forEach((star) => {
-          if (star.isAccent) star.hue = activeRgb;
-        });
-      }
-    };
-    window.addEventListener('accentColorChange', onColorChange);
 
     let rafId;
 
@@ -210,7 +190,6 @@ export default function CrashStars() {
     return () => {
       window.removeEventListener('resize', onResize);
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('accentColorChange', onColorChange);
       cancelAnimationFrame(rafId);
     };
   }, []);

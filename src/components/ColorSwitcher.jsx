@@ -2,6 +2,14 @@ import { useState, useEffect } from 'react';
 
 export const COLOR_PALETTES = [
   {
+    id: 'blue',
+    label: 'Cyber Blue',
+    hex: '#0090FF',
+    rgb: '0, 144, 255',
+    dim: 'rgba(0, 144, 255, 0.14)',
+    glow: 'rgba(0, 144, 255, 0.35)',
+  },
+  {
     id: 'teal',
     label: 'Cyber Teal',
     hex: '#5CF5CD',
@@ -36,7 +44,7 @@ export const COLOR_PALETTES = [
 ];
 
 export default function ColorSwitcher() {
-  const [activeColor, setActiveColor] = useState('teal');
+  const [activeColor, setActiveColor] = useState('blue');
 
   const applyColor = (palette) => {
     setActiveColor(palette.id);

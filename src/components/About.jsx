@@ -40,7 +40,7 @@ function AnimatedCounter({ rawValue }) {
   return <div className="about-stat-val" ref={ref}>{rawValue}</div>;
 }
 
-const TAGS = ['Creative Thinker', 'Problem Solver', 'UI Perfectionist', 'Motion Designer', 'Open Source'];
+const TAGS = ['Business Development', 'Client Relationships', 'Web Solutions', 'Technical Consulting', 'Digital Marketing'];
 
 export default function About() {
   return (
@@ -68,7 +68,7 @@ export default function About() {
         {/* Text */}
         <motion.div className="about-body" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: .15 }} transition={{ duration: .9, delay: .2 }}>
           <p>{portfolio.about}</p>
-          <p>Currently exploring design systems, motion interfaces, and AI-driven experiences — delivering polished solutions that balance aesthetics with engineering precision.</p>
+          <p>Focused on lead generation, technical pitching, requirement analysis, and building strong client relationships.</p>
           <div className="about-tags stagger" style={{ marginTop: '2rem' }}>
             {TAGS.map(t => <span key={t} className="about-tag">{t}</span>)}
           </div>

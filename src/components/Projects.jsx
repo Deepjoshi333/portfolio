@@ -1,5 +1,8 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValueEvent, AnimatePresence } from 'framer-motion';
+import {
+  motion,
+  AnimatePresence,
+} from 'framer-motion';
 import {
   FaRocket,
   FaComments,
@@ -22,56 +25,95 @@ const PROJECT_ICONS = {
 };
 
 export default function Projects() {
-  const targetRef = useRef(null);
-  const trackRef = useRef(null);
-  const [distance, setDistance] = useState(0);
-  const [sectionHeight, setSectionHeight] = useState(null);
-  const [activeIndex, setActiveIndex] = useState(1);
+  const sectionRef  = useRef(null);
+  const viewportRef = useRef(null);
+  const trackRef    = useRef(null);
+  const progressRef = useRef(null);
+  const dimsRef     = useRef({ scrollDist: 0 });
 
-  // Floating image preview state following cursor on hover
+  const [activeIndex,    setActiveIndex]    = useState(1);
   const [hoveredProject, setHoveredProject] = useState(null);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [cursorPos,      setCursorPos]      = useState({ x: 0, y: 0 });
 
-  // Measure track width to compute exact scroll distance and height
+  /* ── JS-driven pinning & horizontal scroll ─────────────────────
+     Uses position:fixed / position:absolute instead of CSS sticky,
+     so parent overflow:hidden cannot break it.
+  ─────────────────────────────────────────────────────────────── */
   useEffect(() => {
+    const section  = sectionRef.current;
+    const viewport = viewportRef.current;
+    const track    = trackRef.current;
+    const fill     = progressRef.current;
+    if (!section || !viewport || !track || !fill) return;
+
+    /* Measure track width → compute scroll distance & section height */
     const measure = () => {
-      if (trackRef.current) {
-        const trackW = trackRef.current.scrollWidth;
-        const winW = window.innerWidth;
-        const winH = window.innerHeight;
-        const paddingOffset = winW > 768 ? winW * 0.14 : winW * 0.08;
-        const dist = Math.max(0, trackW - winW + paddingOffset);
-        setDistance(dist);
-        // Pinned height = exactly 1 viewport sticky view + horizontal travel distance
-        // This eliminates the major bottom gap and transitions smoothly at the last card
-        setSectionHeight(winH + dist);
+      const trackW = track.scrollWidth;
+      const winW   = window.innerWidth;
+      const winH   = window.innerHeight;
+      const padL   = winW * (winW > 768 ? 0.07 : 0.04);
+      // How far the track must translate so the last card is visible
+      const d = Math.max(0, trackW + padL - winW);
+      dimsRef.current.scrollDist = d;
+      // Section height = scroll distance + viewport height (for pin hold)
+      section.style.height = `${d + winH}px`;
+    };
+
+    /* On every scroll tick, compute pin state + horizontal translate */
+    const update = () => {
+      const rect = section.getBoundingClientRect();
+      const winH = window.innerHeight;
+      const d    = dimsRef.current.scrollDist;
+
+      if (rect.top > 0) {
+        /* ── Before pin: section hasn't reached top ── */
+        viewport.className = 'projects-sticky projects-pin-before';
+        track.style.transform = 'translate3d(0,0,0)';
+        fill.style.transform  = 'scaleX(0)';
+        setActiveIndex(1);
+      } else if (rect.bottom <= winH) {
+        /* ── After pin: section has scrolled past ── */
+        viewport.className = 'projects-sticky projects-pin-after';
+        track.style.transform = `translate3d(${-d}px,0,0)`;
+        fill.style.transform  = 'scaleX(1)';
+        setActiveIndex(portfolio.projects.length);
+      } else {
+        /* ── Pinned: lock viewport, slide track ── */
+        viewport.className = 'projects-sticky projects-pin-active';
+        const scrolled = -rect.top;
+        const p = d > 0 ? Math.min(1, Math.max(0, scrolled / d)) : 0;
+        track.style.transform = `translate3d(${-d * p}px,0,0)`;
+        fill.style.transform  = `scaleX(${p})`;
+        const total = portfolio.projects.length;
+        setActiveIndex(Math.min(total, Math.max(1, Math.ceil(p * total) || 1)));
       }
     };
+
     measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+    update();
+
+    /* Re-measure after fonts/images load */
+    const t1 = setTimeout(() => { measure(); update(); }, 200);
+    const t2 = setTimeout(() => { measure(); update(); }, 800);
+
+    const onResize = () => { measure(); update(); };
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', onResize);
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, []);
 
-  // Track vertical scroll inside the pinned container
-  const { scrollYProgress } = useScroll({
-    target: targetRef,
-    offset: ['start start', 'end end'],
-  });
-
-  const rawX = useTransform(scrollYProgress, [0, 1], [0, -distance]);
-  const x = useSpring(rawX, { damping: 25, stiffness: 110, mass: 0.4 });
-
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    const total = portfolio.projects.length;
-    const current = Math.min(total, Math.max(1, Math.ceil(latest * total) || 1));
-    setActiveIndex(current);
-  });
-
-  // Card 3D tilt & cursor tracking
+  /* ── Card 3-D tilt on hover ── */
   const onCardMove = useCallback((e, card, proj) => {
-    const rect = card.getBoundingClientRect();
-    const nx = (e.clientX - rect.left) / rect.width - 0.5;
-    const ny = (e.clientY - rect.top) / rect.height - 0.5;
+    const r  = card.getBoundingClientRect();
+    const nx = (e.clientX - r.left) / r.width  - 0.5;
+    const ny = (e.clientY - r.top)  / r.height - 0.5;
     card.style.transform = `rotateX(${-ny * 10}deg) rotateY(${nx * 10}deg) translateZ(10px)`;
     setCursorPos({ x: e.clientX, y: e.clientY });
     setHoveredProject(proj);
@@ -84,13 +126,14 @@ export default function Projects() {
 
   return (
     <section
-      ref={targetRef}
-      className="projects-pinned-section"
+      ref={sectionRef}
       id="work"
-      style={{ height: sectionHeight ? `${sectionHeight}px` : '220vh' }}
+      className="projects-pinned-section"
     >
-      <div className="projects-sticky">
-        {/* Header */}
+      {/* Viewport — JS toggles between relative / fixed / absolute */}
+      <div ref={viewportRef} className="projects-sticky projects-pin-before">
+
+        {/* ── Header ── */}
         <div className="work-header">
           <div>
             <motion.p
@@ -112,31 +155,32 @@ export default function Projects() {
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.1 }}
             >
-              Selected<br />
-              <span className="o">Projects</span>
+              Selected<br /><span className="o">Projects</span>
             </motion.h2>
           </div>
 
           <div className="work-count">
             <span>
-              {String(activeIndex).padStart(2, '0')} / {String(portfolio.projects.length).padStart(2, '0')}
+              {String(activeIndex).padStart(2, '0')} /{' '}
+              {String(portfolio.projects.length).padStart(2, '0')}
             </span>
           </div>
         </div>
 
-        {/* Horizontal Moving Track */}
+        {/* ── Horizontal track ── */}
         <div className="projects-track-wrap">
-          <motion.div ref={trackRef} className="projects-track" style={{ x }}>
+          <div ref={trackRef} className="projects-track">
             {portfolio.projects.map((proj, i) => (
               <div
-                className="project-card"
                 key={i}
+                className="project-card"
                 onMouseMove={(e) => onCardMove(e, e.currentTarget, proj)}
                 onMouseLeave={(e) => onCardLeave(e.currentTarget)}
               >
                 <div className="project-num">
                   <span>
-                    {String(i + 1).padStart(2, '0')} / {String(portfolio.projects.length).padStart(2, '0')}
+                    {String(i + 1).padStart(2, '0')} /{' '}
+                    {String(portfolio.projects.length).padStart(2, '0')}
                   </span>
                   <div className="project-arrow">↗</div>
                 </div>
@@ -146,36 +190,42 @@ export default function Projects() {
                 </div>
 
                 <h3 className="project-title">{proj.title}</h3>
-                <p className="project-desc">{proj.desc}</p>
+                <p  className="project-desc">{proj.desc}</p>
 
                 <div className="project-tags">
                   {proj.tags.map((t) => (
-                    <span key={t} className="project-tag">
-                      {t}
-                    </span>
+                    <span key={t} className="project-tag">{t}</span>
                   ))}
                 </div>
+
+                <a
+                  className="project-link"
+                  href={proj.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Visit ${proj.title}`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Visit project ↗
+                </a>
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
 
-        {/* Floating Low-Opacity Image Following Cursor on Card Hover */}
+        {/* ── Floating cursor image preview ── */}
         <AnimatePresence>
           {hoveredProject && (
             <motion.div
               className="project-cursor-preview"
-              style={{
-                left: cursorPos.x + -130,
-                top: cursorPos.y + 0,
-              }}
+              style={{ left: cursorPos.x - 130, top: cursorPos.y }}
               initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 0.35, scale: 1 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.85 }}
               transition={{ duration: 0.22, ease: 'easeOut' }}
             >
               <img
-                src={hoveredProject.image}
+                src={hoveredProject.hoverImage}
                 alt={hoveredProject.title}
                 className="project-preview-img"
               />
@@ -183,16 +233,14 @@ export default function Projects() {
           )}
         </AnimatePresence>
 
-        {/* Progress bar + scroll hint */}
+        {/* ── Progress row ── */}
         <div className="projects-progress-row">
-          <p className="projects-hint">
-            <span>Scroll</span> to navigate reel →
-          </p>
+          <p className="projects-hint"><span>Scroll</span> to navigate reel →</p>
 
           <div className="projects-progress-line">
-            <motion.div
+            <div
+              ref={progressRef}
               className="projects-progress-fill"
-              style={{ scaleX: scrollYProgress }}
             />
           </div>
 

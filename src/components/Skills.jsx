@@ -1,29 +1,24 @@
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { portfolio } from '../data/portfolio';
 
 const fadeUp = { hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } };
 
-function SkillCard({ skill, index }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.2 });
-
+function SkillCard({ group, index }) {
   return (
     <motion.div
-      ref={ref}
-      className={`skill-item ${inView ? 'animated' : ''}`}
-      style={{ '--pct-w': `${skill.pct}%` }}
+      className="skill-item"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.05 }}
     >
       <div className="skill-header">
-        <span className="skill-name">{skill.name}</span>
-        <span className="skill-pct">{skill.pct}%</span>
+        <h3 className="skill-name">{group.name}</h3>
       </div>
-      <div className="skill-bar-bg">
-        <div className="skill-bar-fill" />
+      <div className="skill-tag-list">
+        {group.items.map((item) => (
+          <span className="skill-tag" key={item}>{item}</span>
+        ))}
       </div>
     </motion.div>
   );
@@ -40,7 +35,7 @@ export default function Skills() {
         viewport={{ once: true }}
         transition={{ duration: 0.7 }}
       >
-        Core Competencies
+        Business · Technical · Languages
       </motion.p>
       <motion.h2
         className="section-title"
@@ -50,12 +45,12 @@ export default function Skills() {
         viewport={{ once: true }}
         transition={{ duration: 0.7, delay: 0.1 }}
       >
-        Technical<br /><span className="o">Arsenal</span>
+        Skills &amp;<br /><span className="o">Interests</span>
       </motion.h2>
 
       <div className="skills-grid">
-        {portfolio.skills.map((s, i) => (
-          <SkillCard key={s.name} skill={s} index={i} />
+        {portfolio.skillGroups.map((group, i) => (
+          <SkillCard key={group.name} group={group} index={i} />
         ))}
       </div>
     </section>

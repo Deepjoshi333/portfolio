@@ -17,7 +17,7 @@ export default function Qualification() {
         viewport={{ once: true }}
         transition={{ duration: 0.7 }}
       >
-        Milestones
+        Work &amp; Education
       </motion.p>
       <motion.h2
         className="section-title"
@@ -27,7 +27,7 @@ export default function Qualification() {
         viewport={{ once: true }}
         transition={{ duration: 0.7, delay: 0.1 }}
       >
-        Journey &amp;<br /><span className="o">Experience</span>
+        Experience &amp;<br /><span className="o">Education</span>
       </motion.h2>
 
       <div className="timeline-wrap">

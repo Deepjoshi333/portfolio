@@ -6,10 +6,25 @@ import {
   FaInstagram,
   FaDiscord,
   FaEnvelope,
+  FaFacebookF,
+  FaYoutube,
+  FaWhatsapp,
+  FaTelegramPlane,
 } from 'react-icons/fa';
 import { FaXTwitter, FaCode, FaLightbulb } from 'react-icons/fa6';
+import {
+  SiBehance,
+  SiDribbble,
+  SiGitlab,
+  SiMedium,
+  SiPinterest,
+  SiReddit,
+  SiSnapchat,
+  SiStackoverflow,
+  SiThreads,
+  SiTiktok,
+} from 'react-icons/si';
 import { portfolio } from '../data/portfolio';
-import ColorSwitcher from './ColorSwitcher';
 
 const INITIAL_LIKES = 209;
 const MAX_CLICKS = 5;
@@ -21,6 +36,20 @@ const SOCIAL_ICONS = {
   INSTAGRAM: <FaInstagram />,
   LEETCODE: <FaCode />,
   DISCORD: <FaDiscord />,
+  FACEBOOK: <FaFacebookF />,
+  YOUTUBE: <FaYoutube />,
+  WHATSAPP: <FaWhatsapp />,
+  TELEGRAM: <FaTelegramPlane />,
+  TIKTOK: <SiTiktok />,
+  THREADS: <SiThreads />,
+  SNAPCHAT: <SiSnapchat />,
+  PINTEREST: <SiPinterest />,
+  MEDIUM: <SiMedium />,
+  BEHANCE: <SiBehance />,
+  DRIBBBLE: <SiDribbble />,
+  REDDIT: <SiReddit />,
+  STACK_OVERFLOW: <SiStackoverflow />,
+  GITLAB: <SiGitlab />,
   EMAIL: <FaEnvelope />,
 };
 
@@ -163,19 +192,38 @@ export default function Footer() {
       <div className="footer-talk-bottom">
         {/* Left: Social Media Pill Buttons with FontAwesome Icons */}
         <div className="footer-talk-socials">
-          {portfolio.social.map((s) => (
-            <a
-              key={s.label}
-              href={s.url}
-              className="footer-social-pill"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={s.label}
-            >
-              <span className="social-fa-icon">{SOCIAL_ICONS[s.label]}</span>
-              <span>{s.label}</span>
-            </a>
-          ))}
+          {portfolio.social.map((s) => {
+            const icon = SOCIAL_ICONS[s.label];
+            if (!icon) return null;
+
+            if (!s.url.trim()) {
+              return (
+                <span
+                  key={s.label}
+                  className="footer-social-placeholder"
+                  title={`Add your ${s.label} URL in src/data/portfolio.js`}
+                  aria-label={`${s.label} URL not added yet`}
+                >
+                  {icon}
+                </span>
+              );
+            }
+
+            return (
+              <a
+                key={s.label}
+                href={s.url}
+                className="footer-social-pill"
+                target={s.url.startsWith('mailto:') ? undefined : '_blank'}
+                rel={s.url.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+                aria-label={s.label}
+                title={s.label}
+              >
+                <span className="social-fa-icon">{icon}</span>
+                <span>{s.label}</span>
+              </a>
+            );
+          })}
         </div>
 
         {/* Center: Interactive Heart Clapper Button */}
@@ -241,9 +289,8 @@ export default function Footer() {
           </button>
         </div>
 
-        {/* Right Bottom Corner: Color Change Section & Studio Credits */}
+        {/* Right Bottom Corner: Studio Credits */}
         <div className="footer-bottom-right">
-          <ColorSwitcher />
           <div className="footer-talk-credits">
             <span>Design by <strong>The Avgxy Design Studio</strong></span>
             <span>Development by <strong>Deep Joshi</strong></span>

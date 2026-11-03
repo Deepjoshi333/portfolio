@@ -58,7 +58,6 @@ export default function Footer() {
   const [likes, setLikes] = useState(INITIAL_LIKES);
   const [userClicks, setUserClicks] = useState(0);
   const [floatingHearts, setFloatingHearts] = useState([]);
-  const [visitorId, setVisitorId] = useState(null);
   const [isLikesLoading, setIsLikesLoading] = useState(true);
   const [isLikePending, setIsLikePending] = useState(false);
   const [likeError, setLikeError] = useState('');
@@ -68,22 +67,12 @@ export default function Footer() {
 
     const loadLikes = async () => {
       try {
-        let id = localStorage.getItem('dj_visitor_id');
-        if (!id) {
-          id = crypto.randomUUID();
-          localStorage.setItem('dj_visitor_id', id);
-        }
-
-        const response = await fetch(
-          `${LIKES_ENDPOINT}?visitorId=${encodeURIComponent(id)}`,
-        );
+        const response = await fetch(LIKES_ENDPOINT);
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Could not load likes.');
 
         if (!cancelled) {
-          setVisitorId(id);
           setLikes(data.likes);
-          setUserClicks(data.userClicks);
         }
       } catch (error) {
         console.error('Unable to load shared portfolio likes:', error);
@@ -100,27 +89,19 @@ export default function Footer() {
   }, []);
 
   const handleLike = async () => {
-    if (!visitorId || isLikePending || userClicks >= MAX_CLICKS) return;
+    if (isLikePending || userClicks >= MAX_CLICKS) return;
 
     setIsLikePending(true);
     setLikeError('');
     try {
       const response = await fetch(LIKES_ENDPOINT, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ visitorId }),
       });
       const data = await response.json();
-
-      if (response.status === 409) {
-        setLikes(data.likes);
-        setUserClicks(data.userClicks);
-        return;
-      }
       if (!response.ok) throw new Error(data.error || 'Could not save your like.');
 
       setLikes(data.likes);
-      setUserClicks(data.userClicks);
+      setUserClicks((clicks) => clicks + 1);
       const id = Date.now() + Math.random();
       setFloatingHearts((prev) => [...prev, { id, x: (Math.random() - 0.5) * 40 }]);
       setTimeout(() => {
@@ -272,7 +253,7 @@ export default function Footer() {
           <button
             className={`footer-like-btn ${userClicks >= MAX_CLICKS ? 'maxed' : ''}`}
             onClick={handleLike}
-            disabled={isLikesLoading || isLikePending || !visitorId || userClicks >= MAX_CLICKS}
+            disabled={isLikesLoading || isLikePending || userClicks >= MAX_CLICKS}
             aria-label={`Like website. Current count: ${likes}`}
             title={
               likeError || (userClicks >= MAX_CLICKS

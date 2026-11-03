@@ -3,7 +3,8 @@
 ## Portfolio likes
 
 The shared like count is stored in Netlify Blobs by the `netlify/functions/likes.mjs`
-function. It starts at 214 and allows up to five likes per browser. Run the site
+function. It starts at 214 and allows five likes per page load; refreshing the page
+resets the visitor's five clicks. Run the site
 locally with `netlify dev` to use the function; `npm run dev` alone does not run
 Netlify Functions.
 

@@ -12,14 +12,36 @@ const respond = (statusCode, data) => ({
   body: JSON.stringify(data),
 });
 
-const getTotalLikes = async () => {
-  const saved = await store.get('total', { type: 'json' });
-  if (Number.isSafeInteger(saved?.likes) && saved.likes >= INITIAL_LIKES) {
-    return saved.likes;
+const incrementTotalLikes = async () => {
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const saved = await store.getWithMetadata('total', {
+      type: 'json',
+      consistency: 'strong',
+    });
+
+    if (!saved) {
+      const initialized = await store.setJSON(
+        'total',
+        { likes: INITIAL_LIKES },
+        { onlyIfNew: true },
+      );
+      if (initialized.modified) continue;
+      continue;
+    }
+
+    const currentLikes = Number.isSafeInteger(saved.data?.likes)
+      && saved.data.likes >= INITIAL_LIKES
+      ? saved.data.likes
+      : INITIAL_LIKES;
+    const updated = await store.setJSON(
+      'total',
+      { likes: currentLikes + 1 },
+      { onlyIfMatch: saved.etag },
+    );
+    if (updated.modified) return currentLikes + 1;
   }
 
-  await store.setJSON('total', { likes: INITIAL_LIKES });
-  return INITIAL_LIKES;
+  throw new Error('Could not increment likes after repeated concurrent updates.');
 };
 
 export const handler = async (event) => {
@@ -28,15 +50,16 @@ export const handler = async (event) => {
   }
 
   try {
-    const likes = await getTotalLikes();
     if (event.httpMethod === 'GET') {
+      const saved = await store.get('total', { type: 'json', consistency: 'strong' });
+      const likes = Number.isSafeInteger(saved?.likes) && saved.likes >= INITIAL_LIKES
+        ? saved.likes
+        : INITIAL_LIKES;
       return respond(200, { likes });
     }
 
-    const nextLikes = likes + 1;
-    await store.setJSON('total', { likes: nextLikes });
-
-    return respond(200, { likes: nextLikes });
+    const likes = await incrementTotalLikes();
+    return respond(200, { likes });
   } catch (error) {
     console.error('Unable to access portfolio likes store:', error);
     return respond(500, { error: 'Likes are temporarily unavailable.' });

@@ -77,7 +77,7 @@ export default function Footer() {
       } catch (error) {
         console.error('Unable to load shared portfolio likes:', error);
         if (!cancelled) {
-          setLikeError('Could not load the shared like count. Please refresh to try again.');
+          setLikeError(error.message || 'Could not load the shared like count. Please refresh to try again.');
         }
       } finally {
         if (!cancelled) setIsLikesLoading(false);
@@ -109,7 +109,7 @@ export default function Footer() {
       }, 900);
     } catch (error) {
       console.error('Unable to save portfolio like:', error);
-      setLikeError('Could not save your like. Please try again.');
+      setLikeError(error.message || 'Could not save your like. Please try again.');
     } finally {
       setIsLikePending(false);
     }

@@ -2746,6 +2746,18 @@ main {
   align-items: center;
 }
 
+.like-error {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 50%;
+  width: max-content;
+  max-width: 240px;
+  color: #ff9aaf;
+  font-size: 0.65rem;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
 .footer-like-btn {
   position: relative;
   display: inline-flex;

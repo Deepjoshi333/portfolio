@@ -71,7 +71,7 @@ export const portfolio = {
       desc: "AI tool to scan, extract, and organize business cards into structured lead contact data.",
       iconKey: "rocket",
       url: "https://visiflow333.netlify.app",
-      hoverImage: "public/images/visiflow.png",
+      hoverImage: "/images/visiflow.png",
     },
     {
       title: "DeRuGo Event — Managing Website",
@@ -79,7 +79,7 @@ export const portfolio = {
       desc: "Event management platform with event listings, registration, and team collaboration.",
       iconKey: "chat",
       url: "https://derugonew.netlify.app",
-      hoverImage: "public/images/derugo.png",
+      hoverImage: "/images/derugo.png",
     },
     {
       title: "GMIU Transfer Portal",
@@ -87,7 +87,7 @@ export const portfolio = {
       desc: "Streamlines student registration, verification, and admission tracking at GMIU.",
       iconKey: "cube",
       url: "https://unitransfer.gmiu.edu.in",
-      hoverImage: "public/images/gmiu transfer.png",
+      hoverImage: "/images/gmiu%20transfer.png",
     },
     {
       title: "GMIU Premium Program Website",
@@ -95,7 +95,7 @@ export const portfolio = {
       desc: "Official admissions website for GMIU's premium programs, built with PHP and MySQL.",
       iconKey: "cart",
       url: "https://admission.gmiu.edu.in/premium",
-      hoverImage: "public/images/primium.png",
+      hoverImage: "/images/primium.png",
     },
     {
       title: "KYB — Know Your Branch",
@@ -103,7 +103,7 @@ export const portfolio = {
       desc: "Guidance platform helping students choose the right engineering branch.",
       iconKey: "chart",
       url: "https://kyb.gmiu.edu.in",
-      hoverImage: "public/images/kyb.png",
+      hoverImage: "/images/kyb.png",
     },
     {
       title: "GM-ICON 2026",
@@ -111,7 +111,7 @@ export const portfolio = {
       desc: "an international conference on Research & Innovation hosted by Gyanmanjari Innovative University, Bhavnagar.",
       iconKey: "compass",
       url: "https://gmicon.gmiu.edu.in/",
-      hoverImage: "public/images/gmicon.png",
+      hoverImage: "/images/gmicon.png",
     },
   ],
 

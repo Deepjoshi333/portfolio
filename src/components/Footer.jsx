@@ -26,8 +26,9 @@ import {
 } from 'react-icons/si';
 import { portfolio } from '../data/portfolio';
 
-const INITIAL_LIKES = 209;
+const INITIAL_LIKES = 214;
 const MAX_CLICKS = 5;
+const LIKES_ENDPOINT = '/.netlify/functions/likes';
 
 const SOCIAL_ICONS = {
   GITHUB: <FaGithub />,
@@ -57,40 +58,80 @@ export default function Footer() {
   const [likes, setLikes] = useState(INITIAL_LIKES);
   const [userClicks, setUserClicks] = useState(0);
   const [floatingHearts, setFloatingHearts] = useState([]);
+  const [visitorId, setVisitorId] = useState(null);
+  const [isLikesLoading, setIsLikesLoading] = useState(true);
+  const [isLikePending, setIsLikePending] = useState(false);
+  const [likeError, setLikeError] = useState('');
 
   useEffect(() => {
-    const savedTotal = localStorage.getItem('dj_total_likes');
-    const savedUserClicks = localStorage.getItem('dj_user_likes');
+    let cancelled = false;
 
-    if (savedTotal !== null) {
-      setLikes(parseInt(savedTotal, 10));
-    } else {
-      localStorage.setItem('dj_total_likes', String(INITIAL_LIKES));
-    }
+    const loadLikes = async () => {
+      try {
+        let id = localStorage.getItem('dj_visitor_id');
+        if (!id) {
+          id = crypto.randomUUID();
+          localStorage.setItem('dj_visitor_id', id);
+        }
 
-    if (savedUserClicks !== null) {
-      setUserClicks(parseInt(savedUserClicks, 10));
-    }
+        const response = await fetch(
+          `${LIKES_ENDPOINT}?visitorId=${encodeURIComponent(id)}`,
+        );
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Could not load likes.');
+
+        if (!cancelled) {
+          setVisitorId(id);
+          setLikes(data.likes);
+          setUserClicks(data.userClicks);
+        }
+      } catch (error) {
+        console.error('Unable to load shared portfolio likes:', error);
+        if (!cancelled) {
+          setLikeError('Could not load the shared like count. Please refresh to try again.');
+        }
+      } finally {
+        if (!cancelled) setIsLikesLoading(false);
+      }
+    };
+
+    loadLikes();
+    return () => { cancelled = true; };
   }, []);
 
-  const handleLike = () => {
-    if (userClicks >= MAX_CLICKS) return;
+  const handleLike = async () => {
+    if (!visitorId || isLikePending || userClicks >= MAX_CLICKS) return;
 
-    const nextUserClicks = userClicks + 1;
-    const nextTotalLikes = likes + 1;
+    setIsLikePending(true);
+    setLikeError('');
+    try {
+      const response = await fetch(LIKES_ENDPOINT, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ visitorId }),
+      });
+      const data = await response.json();
 
-    setUserClicks(nextUserClicks);
-    setLikes(nextTotalLikes);
+      if (response.status === 409) {
+        setLikes(data.likes);
+        setUserClicks(data.userClicks);
+        return;
+      }
+      if (!response.ok) throw new Error(data.error || 'Could not save your like.');
 
-    localStorage.setItem('dj_user_likes', String(nextUserClicks));
-    localStorage.setItem('dj_total_likes', String(nextTotalLikes));
-
-    // Floating heart particle
-    const id = Date.now() + Math.random();
-    setFloatingHearts((prev) => [...prev, { id, x: (Math.random() - 0.5) * 40 }]);
-    setTimeout(() => {
-      setFloatingHearts((prev) => prev.filter((h) => h.id !== id));
-    }, 900);
+      setLikes(data.likes);
+      setUserClicks(data.userClicks);
+      const id = Date.now() + Math.random();
+      setFloatingHearts((prev) => [...prev, { id, x: (Math.random() - 0.5) * 40 }]);
+      setTimeout(() => {
+        setFloatingHearts((prev) => prev.filter((h) => h.id !== id));
+      }, 900);
+    } catch (error) {
+      console.error('Unable to save portfolio like:', error);
+      setLikeError('Could not save your like. Please try again.');
+    } finally {
+      setIsLikePending(false);
+    }
   };
 
   const [lampOn, setLampOn] = useState(false);
@@ -231,12 +272,12 @@ export default function Footer() {
           <button
             className={`footer-like-btn ${userClicks >= MAX_CLICKS ? 'maxed' : ''}`}
             onClick={handleLike}
-            disabled={userClicks >= MAX_CLICKS}
+            disabled={isLikesLoading || isLikePending || !visitorId || userClicks >= MAX_CLICKS}
             aria-label={`Like website. Current count: ${likes}`}
             title={
-              userClicks >= MAX_CLICKS
+              likeError || (userClicks >= MAX_CLICKS
                 ? 'Thank you for your support! (Max 5 likes reached)'
-                : `Like this portfolio (${userClicks}/${MAX_CLICKS})`
+                : `Like this portfolio (${userClicks}/${MAX_CLICKS})`)
             }
           >
             <svg
@@ -287,6 +328,7 @@ export default function Footer() {
               ))}
             </AnimatePresence>
           </button>
+          {likeError && <span className="like-error" role="status">{likeError}</span>}
         </div>
 
         {/* Right Bottom Corner: Studio Credits */}
